@@ -2,8 +2,6 @@
 """
 Created on 07.06.24
 
-@author: Katja
-
 """
 from smplx.joint_names import JOINT_NAMES
 

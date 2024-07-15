@@ -2,6 +2,4 @@
 """
 Created on 15.07.24
 
-@author: Katja
-
 """

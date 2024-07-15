@@ -2,7 +2,7 @@
 """
 Created on 12.12.23
 
-@author: Katja
+
 
 """
 import colorsys

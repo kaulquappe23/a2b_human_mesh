@@ -2,8 +2,6 @@
 """
 Created on 25.10.23
 
-@author: Katja
-
 """
 import copy
 import sys

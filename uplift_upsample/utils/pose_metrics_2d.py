@@ -3,7 +3,7 @@
 """
 Created on Fri Oct 21 08:57:39 2016
 
-@author: einfalmo
+
 
 Collection of helpers to calculate pose estimation metrics.
 """

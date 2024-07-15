@@ -2,7 +2,7 @@
 """
 Created on 17.10.23
 
-@author: Katja
+
 
 """
 import pickle

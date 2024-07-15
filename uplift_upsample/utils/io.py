@@ -2,7 +2,7 @@
 """
 Created on 26.02.24
 
-@author: Katja
+
 
 """
 import csv

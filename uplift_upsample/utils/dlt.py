@@ -4,7 +4,7 @@ Created on 16 Dec 2022, 16:05
 
 Code adapted from: https://github.com/acvictor/DLT
 
-@author: einfalmo
+
 """
 
 import numpy as np
