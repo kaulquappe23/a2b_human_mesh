@@ -21,7 +21,7 @@ import torch
 from torch.utils.tensorboard import SummaryWriter
 
 from dataset import action_wise_eval
-from dataset.amass.amass_sequence_generator import create_amass_h36m_datasets, create_amass_aspset_datasets
+from dataset.amass.amass_sequence_generator import create_amass_h36m_datasets
 from dataset.aspset.aspset_sequence_generator import create_aspset_datasets
 from dataset.fit3d.fit3d_sequence_generator import create_fit3d_datasets
 from dataset.fit3d.keypoint_order_fit3d import Fit3DOrder

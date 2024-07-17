@@ -88,6 +88,6 @@
     "WEIGHT_DECAY": 3e-06,
     "WEIGHTS": "/path/to/weights/from/h36m/pretraining/best_weights.pth",
     "WEIGHTS_NAME": "model",
-    "PREDICTION_PATH_2D": "/path/to/file/with/2d/predictions/{}.csv"
+    "PREDICTION_PATH_2D": "./dataset/aspset/vitpose/{}.csv"
 
 }

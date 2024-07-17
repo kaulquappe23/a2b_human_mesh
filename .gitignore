@@ -135,7 +135,6 @@ dmypy.json
 *.pb
 
 # model files
-*.pth
 *.pt
 *.pth.tar
 *.mlmodel
