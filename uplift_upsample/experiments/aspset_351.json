@@ -86,7 +86,7 @@
     "VALIDATION_EXAMPLES": -1,
     "VALIDATION_INTERVAL": 1,
     "WEIGHT_DECAY": 3e-06,
-    "WEIGHTS": "/path/to/weights/from/h36m/pretraining/best_weights.pth",
+    "WEIGHTS": "./uplift_upsample/pretrained_weights/h36m_351_pt.h5",
     "WEIGHTS_NAME": "model",
     "PREDICTION_PATH_2D": "./dataset/aspset/vitpose/{}.csv"
 

@@ -6,7 +6,7 @@ Created on 17.10.23
 
 """
 import pickle
-
+import numpy as np
 import torch
 
 from uplift_upsample.model.uplift_upsample_transformer import build_uplift_upsample_transformer

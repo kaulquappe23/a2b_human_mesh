@@ -8,6 +8,7 @@ Created on 26.02.24
 import csv
 
 import numpy as np
+import h5py
 
 from dataset.aspset.keypoint_order import APSSet17POrder
 from dataset.fit3d.keypoint_order_fit3d import Fit3DOrder
@@ -148,3 +149,24 @@ def read_fit3d_csv_annotations(csv_path, eval_all_joints=False):
         joints = joints[:, Fit3DOrder.from_SMPLX_order()]
 
     return subjects, cameras, actions, frame_nums, joints
+
+def traverse_h5_datasets(hdf_file):
+    def h5py_dataset_iterator(g, prefix=''):
+        for key in g.keys():
+            item = g[key]
+            path = f'{prefix}/{key}'
+            if isinstance(item, h5py.Dataset): # test for dataset
+                yield (path, item)
+            elif isinstance(item, h5py.Group): # test for group (go down)
+                yield from h5py_dataset_iterator(item, path)
+
+    for path, _ in h5py_dataset_iterator(hdf_file):
+        yield path
+
+def read_h5_file(file):
+    res = {}
+    with h5py.File(file, 'r') as f:
+        for dset in traverse_h5_datasets(f):
+            real_path = dset[dset[1:].find('/') + 2:]
+            res[real_path] = f[dset][()]
+    return res

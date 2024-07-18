@@ -148,3 +148,6 @@ anthro/send-data/
 
 *._*
 *.png
+
+uplift_upsample/pretrained_weights/
+smpl-models/

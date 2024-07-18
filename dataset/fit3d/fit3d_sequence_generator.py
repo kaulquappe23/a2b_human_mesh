@@ -20,7 +20,7 @@ from posekit.skeleton import skeleton_registry
 from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
 
-import config
+#import config
 from dataset.camera import normalize_screen_coordinates
 from dataset.fit3d.keypoint_order_fit3d import Fit3DOrder
 from dataset.fit3d.util.dataset_util import read_data

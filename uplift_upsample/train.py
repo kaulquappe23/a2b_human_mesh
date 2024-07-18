@@ -8,6 +8,9 @@
 # author:  goldbricklemon
 
 import os
+
+from uplift_upsample.utils.io import read_h5_file
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import pickle
 import random
@@ -241,6 +244,9 @@ if __name__ == '__main__':
             with open(config.WEIGHTS, "rb") as f:
                 weights = pickle.load(f)
                 weights = convert_tf_to_torch_weights(weights)
+        elif config.WEIGHTS.endswith(".h5"):
+            weights = read_h5_file(config.WEIGHTS)
+            weights = convert_tf_to_torch_weights(weights)
         else:
             import sys
             from uplift_upsample.model import uplift_upsample_transformer, vision_transformer

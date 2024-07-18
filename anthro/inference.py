@@ -47,7 +47,8 @@ def read_json_measurements(file):
     """
     with open(file, "r") as f:
         measurements = json.load(f)
-        return measurements, None
+        measure_list = {s: [measurements[s][name] for name in anthro_names] for s in measurements}
+        return measure_list, None
 
 def inference_with_all_models(anthro_measurements_path, anthro_param_name, beta_param_save_path, model_files):
     """

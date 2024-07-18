@@ -87,5 +87,5 @@
     "VALIDATION_EXAMPLES": -1,
     "VALIDATION_INTERVAL": 1,
     "WEIGHT_DECAY": 2e-06,
-    "WEIGHTS": "/path/to/weights/from/amass/pretraining/best_weights.pth"
+    "WEIGHTS": "./uplift_upsample/pretrained_weights/amass_351.h5"
 }
