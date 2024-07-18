@@ -74,7 +74,7 @@ def inference_with_all_models(anthro_measurements_path, anthro_param_name, beta_
         print(f"Inference for Model: {model_file}")
         model_type = "svr" if "svr" in model_file else "nn"
         model = AnthroToBeta(model_file, model_type=model_type)
-        gender = "neutral" if "neutral" in model_file else "male"
+        gender = "neutral" if "neutral" in model_file else "female" if "female" in model_file else "male"
         beta_param_res = {
                 "gender": gender,
                 "name": f"{anthro_param_name}_A2B_{model_type}_{gender}"
@@ -86,11 +86,11 @@ def inference_with_all_models(anthro_measurements_path, anthro_param_name, beta_
                 beta_param_res[s] = beta_param_res[s].tolist()
         all_beta_results[beta_param_res["name"]] = beta_param_res
 
-    all_beta_results[anthro_param_name] = {
-            "name":     anthro_param_name,
-            "gender":   "neutral",
-            }
     if median_betas is not None:
+        all_beta_results[anthro_param_name] = {
+                "name":   anthro_param_name,
+                "gender": "neutral",
+                }
         for s in median_betas:
             median_bs = median_betas[s][0] if len(median_betas[s].shape) > 1 else median_betas[s]
             all_beta_results[anthro_param_name][s] = median_bs

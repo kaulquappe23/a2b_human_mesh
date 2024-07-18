@@ -74,6 +74,8 @@ class AnthroToBetaNN(nn.Module, AnthroToBetaWrapper):
                   nn.Linear(330, 330), nn.Tanh(),
                   nn.Linear(330, num_betas)]
 
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
         initialization = lambda l: nn.init.xavier_uniform_(l, gain=nn.init.calculate_gain('tanh'))
         for l in layers[::2]:
             initialization(l.weight)
@@ -81,7 +83,7 @@ class AnthroToBetaNN(nn.Module, AnthroToBetaWrapper):
         self.layers = nn.Sequential(*layers)
 
     def load_weights(self, weights_path):
-        self.load_state_dict(torch.load(weights_path))
+        self.load_state_dict(torch.load(weights_path, map_location=self.device))
 
     def forward(self, anthro):
         return self.layers(anthro)
