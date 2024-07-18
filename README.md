@@ -24,7 +24,7 @@ The landmarks for the measurements are given in the supplementary material of th
 python -m anthro.inference --measurements <path_to_measurements_json> --save_path <path_to_save_beta_predictions> --name <measurement_name>
 ```
 
-We provide an example anthropometric measurements file `anthro/example_measurements.json` in order to test our models.
+We provide an example anthropometric measurements file `anthro/example_measurements.json` in order to test our models. You can try with:
 ```bash
 python -m anthro.inference --measurements "./anthro/example_measurements.json" --save_path "./anthro/anthro_betas.json" --name example
 ```
@@ -40,3 +40,6 @@ We further add experiments and data preparation code for ASPset and fit3D. In or
 ```bash
 python -m uplift_upsample.train --config ./uplift_upsample/experiments/aspset_351.json --out_dir ./uplift_upsample/out --dataset_3d_path <path/to/aspset> --train_subset train --val_subset val --dataset aspset --gpu_id 0
 ```
+
+## The Rest of the Code
+All other functionality (IK, Weights, B2A, Evaluation, Regressors, etc.) will be added after acceptance of this paper.
