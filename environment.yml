@@ -17,3 +17,6 @@ dependencies:
     - h5py==3.11.0
     - git+https://github.com/anibali/posekit.git@c9d61d5fa84b3e87dd1a7f0e99ae58aa1e4c759d#egg=posekit
     - git+https://github.com/anibali/aspset-510.git
+    - human_body_prior==0.8.5.0
+    - omegaconf==2.3.0
+    - loguru==0.7.2
