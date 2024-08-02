@@ -130,6 +130,14 @@ The output then looks like the following:
 ```
 The output is given per evaluated A2B model (SVR, NN) and per gender (neutral, female, male). For each model output, you will find the name (of model and anthropometric measurements as given on the command line), the gender, the number of beta parameters used and the results per subject. 
 
+## Inverse Kinematics
+
+We provide the code to run inverse kinematics (IK) on the fit3D ground truth data. Running it on any other set of 3D poses can be added straightforward. The code is provided in the subdirectory `inverse_kinematics`. You need vposer to run the code. Download the pretrained vposer model from the [official VPoser repository](https://smpl-x.is.tue.mpg.de) and place it in the folder `inverse_kinematics/V02_05`. Alternatively, you can modify the variable `VPOSER_DIR` in the file `config.py` and set it to the directory where you have stored the model files. To run IK on the fit3D ground truth, execute the following command:
+
+```bash
+python -m inverse_kinematics.run_ik --data_path <path/to/fit3d> --save_path <path_to_save_ik_results> --gpus <"list of gpus"> --num_procs <number of processes> --gender <gender_of_smplx_model> --split <val or train>
+```
+
 ## Uplift Upsample
 This repository contains a reimplementation
 of the Tensorflow code from [Uplift and Upsample: Efficient 3D Human Pose Estimation with Uplifting Transformers](https://arxiv.org/abs/2210.06110) in PyTorch. You can find all the code in the subdirectory `uplift_upsample`.
