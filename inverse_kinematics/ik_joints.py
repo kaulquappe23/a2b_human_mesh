@@ -5,6 +5,7 @@ Created on 02.08.24
 @author: Katja
 
 """
+import copy
 import os
 
 from smplx.lbs import batch_rodrigues
@@ -35,11 +36,14 @@ class IK_Keypoints(nn.Module):
     """
 
     """
-    def __init__(self, used_joints=None):
+    def __init__(self, used_joints=None, gender="neutral", regressor=None):
         super(IK_Keypoints, self).__init__()
 
-        self.bm = build_layer(config.SMPL_MODEL_DIR, **smplx_cfg)
+        cfg = copy.deepcopy(smplx_cfg)
+        cfg["gender"] = gender
+        self.bm = build_layer(config.SMPL_MODEL_DIR, **cfg)
         self.used_joints = used_joints
+        self.regressor = torch.from_numpy(regressor) if isinstance(regressor, np.ndarray) else regressor
 
     def forward(self, body_parms):
 
@@ -50,19 +54,24 @@ class IK_Keypoints(nn.Module):
                         global_orient=global_orient,
                         transl=body_parms["trans"]
                         )
-        if self.used_joints is not None:
-            joints = human.joints[:, self.used_joints]
+        if self.regressor is not None:
+             joints = self.regressor.to(human.vertices.device) @ human.vertices
         else:
             joints = human.joints
+        if self.used_joints is not None:
+            joints = joints[:, self.used_joints]
+
         return {'source_kpts': joints, 'body': human}
 
-def run_ik_fitting(joints, save_path, keypoint_order, translation=None, num_betas=10, num_processes_per_gpu=8):
+def run_ik_fitting(joints, save_path, keypoint_order, gender="neutral", regressor=None, translation=None, num_betas=10, num_processes_per_gpu=8):
     """
     Fit a SMPLX model to the given joints and save the result.
     Uses all available GPUs and splits the frames to process among them.
+    :param gender: The gender of the SMPL-X model
     :param num_processes_per_gpu: Number of processes to run per GPU. The frames will be split among all processes (num_gpus * num_processes_per_gpu)
     :param joints: N x K x 3 numpy array of 3D joints, K must match len(keypoint_order)
     :param save_path: File to save results
+    :param regressor: Regressor to obtain keypoints from SMPL-X mesh. If not set, defaults to the default SMPL-X regressor
     :param translation: Translation that has to be applied to the joints after the fitting, used if the joints where normalized before fitting
     :param num_betas: Number of beta parameters of the SMPL-X model to fit
     :param keypoint_order: Mapping of SMPL-X joints to the joints in the input array -> list of indices of SMPL-X joints in the order of the joints from the input array
@@ -86,7 +95,7 @@ def run_ik_fitting(joints, save_path, keypoint_order, translation=None, num_beta
         jobs = []
         for i in range(num_processes):
             fs, target_pts = frame_chunks[i], joints_chunks[i]
-            p = mp.Process(target=ik_fitting_worker, args=(fs, target_pts, final_results, keypoint_order, num_betas, i))
+            p = mp.Process(target=ik_fitting_worker, args=(fs, target_pts, final_results, keypoint_order, gender, regressor, num_betas, i))
             jobs.append(p)
             p.start()
 
@@ -107,9 +116,11 @@ def run_ik_fitting(joints, save_path, keypoint_order, translation=None, num_beta
     np.savez(save_path, **results)
 
 
-def ik_fitting_worker(frame_ids, targets, final_results, keypoint_order, num_betas=10, worker_id=0):
+def ik_fitting_worker(frame_ids, targets, final_results, keypoint_order, gender, regressor=None, num_betas=10, worker_id=0):
     """
     One worker for the ik fitting
+    :param regressor: Regressor to obtain keypoints from SMPL-X mesh. If not set, defaults to the default SMPL-X regressor
+    :param gender: The gender of the SMPL-X model
     :param frame_ids: frames to process
     :param targets: target 3D joints
     :param final_results: dictionary to store the results, shared among all processes
@@ -138,7 +149,7 @@ def ik_fitting_worker(frame_ids, targets, final_results, keypoint_order, num_bet
     for i, frame in enumerate(frame_ids):
 
         target_pts = targets[i].detach().to(device)[None]
-        curr_ik_pts = IK_Keypoints(keypoint_order).to(device)
+        curr_ik_pts = IK_Keypoints(keypoint_order, gender=gender, regressor=regressor).to(device)
 
         # speed up process and enhance results: start from estimation from previous frame instead of T-Pose
         if frame-1 in final_results["betas"]:
