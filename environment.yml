@@ -20,3 +20,4 @@ dependencies:
     - human_body_prior==0.8.5.0
     - omegaconf==2.3.0
     - loguru==0.7.2
+    - k3d==2.16.1
