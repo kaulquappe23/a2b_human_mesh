@@ -49,6 +49,7 @@ def analyze_betas(beta_params, model_gender="neutral", save_path=None, force_rec
         final_dict = {}
 
     overall = {"stddev": defaultdict(list), "stddev_rel": defaultdict(list), "rel_range": defaultdict(list)}
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     for s in beta_params:
         if isinstance(beta_params[s][0], torch.Tensor):
             beta_params[s] = [t.cpu().numpy() for t in beta_params[s]]
@@ -67,12 +68,12 @@ def analyze_betas(beta_params, model_gender="neutral", save_path=None, force_rec
 
             model = smplx.create(SMPL_MODEL_DIR, model_type="smplx",
                                          gender=model_gender, use_face_contour=False,
-                                         num_betas=10)
+                                         num_betas=10).to(device)
             print()
             betas = np.asarray(beta_params[s])
             measures = []
             for beta_id in tqdm(range(betas.shape[0])):
-                measure_res = smplx_measurer.measure(torch.from_numpy(betas[beta_id]).float(), model=model)
+                measure_res = smplx_measurer.measure(torch.from_numpy(betas[beta_id])[None].float().to(device), model=model)
                 measures.append(measure_res)
 
             measures = np.asarray(measures)[:, 0]

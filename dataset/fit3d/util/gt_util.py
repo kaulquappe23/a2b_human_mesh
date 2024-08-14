@@ -17,10 +17,9 @@ from dataset.fit3d.util.dataset_util import read_data
 from dataset.fit3d.util.smplx_util import SMPLXHelper
 
 
-def load_fit3d_gt(data_path, split, camera_params=True, all_joints=False, use_nose=True):
+def load_fit3d_gt(data_path, split, camera_params=True, all_joints=False):
     save_path = os.path.join(data_path, f"{split}_gt.pkl" if not camera_params else f"{split}_gt_camera.pkl")
     save_path = save_path.replace(".pkl", "_all.pkl") if all_joints else save_path
-    save_path = save_path.replace(".pkl", "_37.pkl") if use_nose else save_path
     if not camera_params:
         print("Using WORLD coordinates")
     else:
@@ -32,7 +31,7 @@ def load_fit3d_gt(data_path, split, camera_params=True, all_joints=False, use_no
     data_root = data_path[:data_path.rfind("fit3d")]
     gt = {}
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
-    smplx_helper = SMPLXHelper(config.SMPL_MODEL_DIR, load_renderer=False, device=device)
+    smplx_helper = SMPLXHelper(config.SMPL_MODEL_DIR, device=device)
     subjects_val = ["s11"]
     betas_gt = {}
     gt_smplx = {}
@@ -64,7 +63,7 @@ def load_fit3d_gt(data_path, split, camera_params=True, all_joints=False, use_no
                     posed_data = smplx_helper.smplx_model(**camera_smplx_params)
                 joints_smplx = posed_data.joints.cpu().numpy()
                 if not all_joints:
-                    joints_smplx = joints_smplx[:, Fit3DOrder.from_SMPLX_order(use_nose=use_nose)]
+                    joints_smplx = joints_smplx[:, Fit3DOrder.from_SMPLX_order()]
                 gt[subject_name][camera_name][action_name] = joints_smplx
                 gt_smplx[subject_name][camera_name][action_name] = {i+1: {"betas": camera_smplx_params["betas"][i].cpu().numpy(),
                                                           "body_pose": camera_smplx_params["body_pose"][i].cpu().numpy(),

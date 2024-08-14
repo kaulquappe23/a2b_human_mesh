@@ -130,6 +130,8 @@ The output then looks like the following:
 ```
 The output is given per evaluated A2B model (SVR, NN) and per gender (neutral, female, male). For each model output, you will find the name (of model and anthropometric measurements as given on the command line), the gender, the number of beta parameters used and the results per subject.
 
+It is further possible to pass a pickle-file that contains a dictionary mapping from subject names to a dictionary of anthropometric measurements, whereby the measurements should be a list. This functionality is used for the evaluation process (see Section *Evaluation*). The list of measurements is reduced with a median operation and then passed to the A2B models. The output is then a single set of beta parameters per subject per A2B model. The dictionary might also contain the median of the originally estimated beta parameters with the key `original_median_betas`. This entry will be ignored and just passed to the final result. The final result is identical to the example output above, except that it contains the original median beta parameters, too.
+
 ## Inverse Kinematics
 
 We provide the code to run inverse kinematics (IK) on the ASPset as well as fit3D ground truth data and results from the Uplift Upsample model. Running it on any other set of 3D poses can be added analogously. The code is provided in the subdirectory `inverse_kinematics`. You need vposer to run the code. Download the pretrained vposer model from the [official VPoser repository](https://smpl-x.is.tue.mpg.de) and place it in the folder `inverse_kinematics/V02_05`. Alternatively, you can modify the variable `VPOSER_DIR` in the file `config.py` and set it to the directory where you have stored the model files. 
@@ -158,6 +160,8 @@ Since the axes of the coordinate systems of ASPset and SMPL-X are different, the
 
 
 ## Evaluation and B2A
+
+In this section we describe how we evaluate model results with consistent body shapes and how we create the measurements for our evaluations.
 
 ### Measuring SMPL-X models: B2A
 
@@ -203,6 +207,36 @@ The `rotate_mesh` flag is optional. If set, the mesh is rotated back to the orig
 
 ### fit3D
 
+fit3D results need to be given in a dictionary with the following structure:
+```
+{
+    "subject_name": {
+        "camera_name": {
+            "action_name": {
+                frame_num: {
+                    "betas": [list of beta parameters],
+                    "body_pose": [list of body pose parameters],
+                    "global_orient": [global orientation,
+                    "translation": [translation],
+                }
+            ...}
+        ...}
+    ...}
+...}
+    
+```
+In order to create this structure from IK results (no matter if applied to ground truth or uplift upsample results), you can run the script 
+```bash
+python -m evaluation.aspset_prepare_ik --input <path_to_ik_results> --output <path_to_save>
+```
+The script will generate files: `<save_path>_smplx_vals.pkl` and `<save_path>_res_betas.pkl`. The first contains the structure as mentioned, the second the beta parameters per subject and is used to create median and A2B beta parameters.
+
+You can now run the evaluation on the raw results with the following command:
+```bash
+python -m evaluation.aspset_eval --res <smplx_vals_file> --out <save_path_for_3d_joints> --aspset_path <aspset_root_dir> --rotate_mesh
+```
+The `rotate_mesh` flag is optional. If set, the mesh is rotated back to the original coordinate system, which is necessary for IK executed on ASPset poses. This script creates a file and saves the 3D joint coordinates. If called a second time, it reuses the stored 3D joint coordinates and
+
 ### Evaluation with fixed beta parameters
 
 As described in the paper, varying body shapes throughout a subject are not realistic. Therefore, we evaluate the performance of the models with fixed beta parameters. We try with the beta parameters set to the median of the beta parameters for each subject and with the A2B results, whereby the median anthropometric measurements are used as an input. In order to prepare these different sets of beta parameters, a script is provided that creates the meshes from the beta parameters and calculates the anthropometric measurements. The script can be called with the following command:
@@ -239,6 +273,3 @@ Training on fit3D is executed analogous to ASPset. The csv files for fit3D will 
 
 ### Training on AMASS and Human3.6m
 Follow the instructions of the [original repository](https://github.com/goldbricklemon/uplift-upsample-3dhpe) to setup the dataset(s), download the pre-trained models, and run the code. Since the code is a sub-repository here, the only difference for running is that you need to add the `uplift_upsample` prefix to the train/eval calls, etc. Pretrained weights can be downloaded from the original repository in `.h5` format and reused in this repository.
-
-## The Rest of the Code
-All other functionality (Weights, B2A, Evaluation, etc.) will be added after acceptance of this paper.

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on 12.08.24
+Created on 14.08.24
 
 @author: Katja
 
@@ -24,22 +24,24 @@ def create_ik_results(origin_dir, save_path):
     dest_file_betas = save_path + "_res_betas.pkl"
 
     results = {}
-    ik_beta_results = {"1e28": [], "8a59": []}
+    ik_beta_results = {}
     for file in tqdm(os.listdir(origin_dir)):
         if not file.endswith(".npz"):
             continue
-        s, c, cam = file[:-7].split("_")
+        s = file[:-7].split("_")[0]
+        c = file[:-7].split("_")[1]
+        a = file[len(s) + len(c) + 2:-7]
         if s not in results:
             results[s] = {}
         if c not in results[s]:
             results[s][c] = {}
-        results[s][c][cam] = {}
+        results[s][c][a] = {}
         sample = np.load(os.path.join(origin_dir, file))
         if s not in ik_beta_results:
             ik_beta_results[s] = []
         ik_beta_results[s].append(sample["betas"])
         for i in range(sample["betas"].shape[0]):
-            results[s][c][cam][i+1] = {"betas": sample["betas"][i][None],
+            results[s][c][a][i+1] = {"betas": sample["betas"][i][None],
                                       "body_pose": sample["pose_body"][i][None],
                                       "global_orient": sample["root_orient"][i][None],
                                       "translation": sample["trans"][i][None]}
@@ -49,12 +51,8 @@ def create_ik_results(origin_dir, save_path):
 
     with open(dest_file, "wb") as f:
         pickle.dump(results, f)
-        print(f"Wrote SMPL-X parameters to {dest_file}")
     with open(dest_file_betas, "wb") as f:
         pickle.dump(ik_beta_results, f)
-        print(f"Wrote betas to {dest_file_betas}")
-
-
 
 if __name__ == '__main__':
     import argparse
