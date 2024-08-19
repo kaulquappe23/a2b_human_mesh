@@ -227,15 +227,15 @@ fit3D results need to be given in a dictionary with the following structure:
 ```
 In order to create this structure from IK results (no matter if applied to ground truth or uplift upsample results), you can run the script 
 ```bash
-python -m evaluation.aspset_prepare_ik --input <path_to_ik_results> --output <path_to_save>
+python -m evaluation.fit3d_prepare_ik --input <path_to_ik_results> --output <path_to_save>
 ```
 The script will generate files: `<save_path>_smplx_vals.pkl` and `<save_path>_res_betas.pkl`. The first contains the structure as mentioned, the second the beta parameters per subject and is used to create median and A2B beta parameters.
 
 You can now run the evaluation on the raw results with the following command:
 ```bash
-python -m evaluation.aspset_eval --res <smplx_vals_file> --out <save_path_for_3d_joints> --aspset_path <aspset_root_dir> --rotate_mesh
+python -m evaluation.fit3d_eval --res <smplx_vals_file> --out <save_path_for_3d_joints> --fit3d_path <aspset_root_dir> 
 ```
-The `rotate_mesh` flag is optional. If set, the mesh is rotated back to the original coordinate system, which is necessary for IK executed on ASPset poses. This script creates a file and saves the 3D joint coordinates. If called a second time, it reuses the stored 3D joint coordinates and
+This script creates a file and saves the 3D joint coordinates. If called a second time, it reuses the stored 3D joint coordinates and does not calculate them again. If you want to force a new calculation, add the flag `--recalc`.
 
 ### Evaluation with fixed beta parameters
 

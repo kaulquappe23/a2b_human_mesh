@@ -7,7 +7,6 @@ Created on 07.06.24
 """
 import copy
 import os
-# os.environ["CUDA_VISIBLE_DEVICES"] = "4"
 import pickle
 
 import numpy as np
@@ -197,7 +196,7 @@ if __name__ == '__main__':
                         help="File with fit3D results in correct dict format (see readme)")
     parser.add_argument('--out', required=True,
                         help="Base path for the files with the saved 3d keypoints. The filename will be extended by the run name and the name of the beta parameters, if given.")
-    parser.add_argument('--aspset_path', required=True,
+    parser.add_argument('--fit3d_path', required=True,
                         help="Path to the fit3D ground truth")
     parser.add_argument('--betas', required=False,
                         help="File with predefined beta parameters.",
@@ -213,7 +212,7 @@ if __name__ == '__main__':
     print("                                                       |     MPJPE|    NMPJPE|   PAMPJPE|")
     evaluate_results_with_all_predefined_betas(args.res,
                                                args.out,
-                                               args.aspset_path,
+                                               args.fit3d_path,
                                                predefined_betas_file=args.betas,
                                                run_name=args.name,
                                                force_recalc=args.recalc)
