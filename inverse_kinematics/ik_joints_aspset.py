@@ -14,7 +14,7 @@ from config import ASPSET_REGRESSOR_PATH
 from dataset.aspset.util import load_aspset_gt
 
 
-def run_on_aspset(split, data_dir, save_dir, gender):
+def run_on_aspset(split, data_dir, save_dir, gender, num_procs):
 
     if not data_dir.endswith(".pkl"):
         source_pts_dict = load_aspset_gt(data_dir, split)
@@ -42,7 +42,8 @@ def run_on_aspset(split, data_dir, save_dir, gender):
                                save_path=os.path.join(save_dir, f"{s}_{c}_{cam}_ik.npz"),
                                translation=root,
                                gender=gender,
-                               regressor=regressor)
+                               regressor=regressor,
+                               num_processes_per_gpu=num_procs)
 
 if __name__ == '__main__':
     import argparse

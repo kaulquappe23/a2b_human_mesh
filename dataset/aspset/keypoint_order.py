@@ -64,19 +64,6 @@ class APSSet17POrder:
                 cls.l_shoulder, cls.l_elbow, cls.l_wrist,
                 ]
 
-    @classmethod
-    def to_posetriplet_order(cls):
-        """
-        Matches the posetriplet 16 point order
-        :return:
-        """
-        return [cls.pelvis, cls.r_hip, cls.r_knee, cls.r_ankle,
-                cls.l_hip, cls.l_knee, cls.l_ankle,
-                cls.torso, cls.neck, cls.head,
-                cls.l_shoulder, cls.l_elbow, cls.l_wrist,
-                cls.r_shoulder, cls.r_elbow, cls.r_wrist,
-                ]
-
     def __init__(self):
         pass
 

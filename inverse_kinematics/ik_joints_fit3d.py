@@ -6,7 +6,7 @@ import os
 import einops
 
 
-def run_on_fit3d(split, data_dir, save_dir, gender):
+def run_on_fit3d(split, data_dir, save_dir, gender, num_procs):
 
     if not data_dir.endswith(".pkl"):
         source_pts_dict = load_fit3d_gt(data_dir, split)
@@ -27,7 +27,8 @@ def run_on_fit3d(split, data_dir, save_dir, gender):
                                keypoint_order=Fit3DOrder.from_SMPLX_order(),
                                save_path=os.path.join(save_dir, f"{s}_{c}_{a}_ik.npz"),
                                translation=root,
-                               gender=gender)
+                               gender=gender,
+                               num_processes_per_gpu=num_procs)
 
 
 if __name__ == '__main__':
@@ -69,4 +70,4 @@ if __name__ == '__main__':
 
     save_dir = os.path.join(args.save_path,  f"{args.split}_{args.gender}")
     os.makedirs(save_dir, exist_ok=True)
-    run_on_fit3d(args.split, args.data_path, save_dir, args.gender)
+    run_on_fit3d(args.split, args.data_path, save_dir, args.gender, args.num_procs)
