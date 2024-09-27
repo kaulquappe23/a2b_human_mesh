@@ -1,8 +1,8 @@
-# Mutual Improvement of 3D Human Pose and Mesh Estimation by Leveraging Anthropometric Measurements for Consistent Body Shapes
+# Leveraging Anthropometric Measurements to Improve Human Mesh Estimation and Ensure Consistent Body Shapes
 
 ## Installation
 
-Create a new anaconda environment. By running 
+Create a new anaconda environment by running 
 ```bash
 conda env create -f environment.yml
 ```
@@ -10,7 +10,7 @@ and activate the environment with
 ```bash
 conda activate a2b_hme
 ```
-For evaluation and fit3D, the SMPL-X models are needed. If you just want to test the A2B models, the models are not necessary. If you need them, download the SMPL-X models from the [official SMPL-X repository](https://smpl-x.is.tue.mpg.de) and place them in the folder `smpl-models/smplx`. Alternatively, you can modify the variable `SMPL_MODEL_DIR` in the file `config.py` and set it to the directory where you have stored the model files.
+For evaluation and fit3D, the SMPL-X models are needed. If you just want to test the A2B models, the SMPL-X models are not necessary. If you need them, download the SMPL-X models from the [official SMPL-X repository](https://smpl-x.is.tue.mpg.de) and place them in the folder `smpl-models/smplx`. Alternatively, you can modify the variable `SMPL_MODEL_DIR` in the file `config.py` and set it to the directory where you have stored the model files.
 
 ## A2B Models
 
