@@ -17,7 +17,7 @@ from dataset.fit3d.util.dataset_util import read_data
 from dataset.fit3d.util.smplx_util import SMPLXHelper
 
 
-def load_fit3d_gt(data_path, split, camera_params=True, all_joints=False):
+def load_fit3d_gt(data_path, split, subject_val, camera_params=True, all_joints=False):
     save_path = os.path.join(data_path, f"{split}_gt.pkl" if not camera_params else f"{split}_gt_camera.pkl")
     save_path = save_path.replace(".pkl", "_all.pkl") if all_joints else save_path
     if not camera_params:
@@ -32,7 +32,7 @@ def load_fit3d_gt(data_path, split, camera_params=True, all_joints=False):
     gt = {}
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
     smplx_helper = SMPLXHelper(config.SMPL_MODEL_DIR, device=device)
-    subjects_val = ["s11"]
+    subjects_val = [subject_val]
     betas_gt = {}
     gt_smplx = {}
     print(f"Loading {split} data")

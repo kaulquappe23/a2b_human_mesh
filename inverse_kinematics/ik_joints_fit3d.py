@@ -6,10 +6,10 @@ import os
 import einops
 
 
-def run_on_fit3d(split, data_dir, save_dir, gender, num_procs):
+def run_on_fit3d(split, subject_val, data_dir, save_dir, gender, num_procs):
 
     if not data_dir.endswith(".pkl"):
-        source_pts_dict = load_fit3d_gt(data_dir, split)
+        source_pts_dict = load_fit3d_gt(data_dir, split, subject_val)
     else:
         source_pts_dict = load_uu_results(data_dir)
 
@@ -56,6 +56,9 @@ if __name__ == '__main__':
     parser.add_argument('--split', required=False,
                         default="val",
                         help="split of fit3D data")
+    parser.add_argument('--subject_val', required=False,
+                        default="s11",
+                        help="subject in the validation set")
 
     args = parser.parse_args()
     # set the GPUs you want to use
@@ -70,4 +73,4 @@ if __name__ == '__main__':
 
     save_dir = os.path.join(args.save_path,  f"{args.split}_{args.gender}")
     os.makedirs(save_dir, exist_ok=True)
-    run_on_fit3d(args.split, args.data_path, save_dir, args.gender, args.num_procs)
+    run_on_fit3d(args.split, args.subject_val, args.data_path, save_dir, args.gender, args.num_procs)

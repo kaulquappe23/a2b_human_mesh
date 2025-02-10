@@ -58,7 +58,7 @@ def run_eval(config: UpliftUpsampleConfig, stride, dataset_name, dataset_path, d
         model = build_uplift_upsample_transformer(config=config)
         if weights_path is not None:
             log(f"Loading weights from {weights_path}")
-            weights = torch.load(weights_path, map_location=device)
+            weights = torch.load(weights_path, map_location=device, weights_only=False)
             if model_name in weights:
                 weights = weights[model_name].state_dict()
             model.load_state_dict(weights)
@@ -251,11 +251,11 @@ if __name__ == '__main__':
 
     # Parse command line arguments
     parser = argparse.ArgumentParser(
-        description='3D evaluation on H36m.')
+        description='3D evaluation.')
     parser.add_argument('--dataset', required=True,
-                        default="h36m",
+                        default="fit3d",
                         metavar="dataset name, e.g. h36m",
-                        help="h36m or aspset")
+                        help="fit3d or aspset")
     parser.add_argument('--weights', required=True,
                         default=None,
                         metavar="/path/to/weights.pth",
@@ -287,7 +287,7 @@ if __name__ == '__main__':
                         metavar="/path/to/2d poses/.npz",
                         help='2D pose dataset')
     parser.add_argument('--test_subset', required=False,
-                        default="test",
+                        default="val",
                         metavar="<name of test subset>",
                         help="Name of the dataset subset to evaluate on")
     parser.add_argument('--model_name', required=False,
