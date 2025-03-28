@@ -147,7 +147,7 @@ anthro/gen_models/
 anthro/send-data/
 
 *._*
-*.png
+#*.png
 
 uplift_upsample/pretrained_weights/
 smpl-models/
