@@ -5,8 +5,11 @@ Created on 12.06.24
 @author: Katja
 
 """
+import warnings
+
 import numpy as np
 import torch
+from sklearn.exceptions import InconsistentVersionWarning
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
@@ -101,7 +104,9 @@ class AnthroToBetaSVR(AnthroToBetaWrapper):
         self.estimator = self.regressor.fit(anthros, betas)
 
     def load_weights(self, weights_path):
-        self.estimator = torch.load(weights_path)
+        # The models are trained with scikit-learn 1.3.2, but it also works with 1.6.1, but we don't want the warnings
+        warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
+        self.estimator = torch.load(weights_path, weights_only=False)
 
     def forward(self, anthros):
         assert self.estimator is not None, "You need to train or set the model first"

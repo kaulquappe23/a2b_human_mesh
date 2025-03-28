@@ -53,11 +53,9 @@ class Fit3DOrder:
         return cls.names.index(name)
 
     @classmethod
-    def from_SMPLX_order(cls, use_nose=True):
+    def from_SMPLX_order(cls):
         indices = [JOINT_NAMES.index(name) for name in cls.names]
-        if use_nose:
-            return indices
-        return indices[:-1]
+        return indices
 
     @classmethod
     def flip_lr_order(cls):

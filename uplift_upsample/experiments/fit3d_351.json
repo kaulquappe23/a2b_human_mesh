@@ -69,6 +69,6 @@
     "WEIGHT_DECAY": 3e-06,
     "WEIGHTS": "./uplift_upsample/pretrained_weights/h36m_351_pt.h5",
     "WEIGHTS_NAME": "model",
-    "PREDICTION_PATH_2D": "./dataset/fit3d/vitpose/{}.csv"
+    "PREDICTION_PATH_2D": "/data/ssd0/ludwikat/datasets/fit3d/vitpose/v2/s11/{}.csv"
 
 }

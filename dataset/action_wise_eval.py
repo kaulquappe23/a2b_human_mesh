@@ -142,10 +142,9 @@ def compute_and_log_metrics(pred3d, gt3d, actions, root_index, action_wise):
     else:
         frame_results, single_results = frame_wise_eval(pred_3d=pred3d, gt_3d=gt3d, root_index=root_index)
         average_results, per_action_results = None, None
-
-    log("Frame-wise evaluation:")
-    print_results(frame_results, single_results, True)
-    log("")
+        log("Frame-wise evaluation:")
+        print_results(frame_results, single_results, True)
+        log("")
 
     if action_wise is True:
         for action_name in sorted(per_action_results.keys()):
