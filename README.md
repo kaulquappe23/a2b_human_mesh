@@ -1,7 +1,12 @@
 # Leveraging Anthropometric Measurements to Improve Human Mesh Estimation and Ensure Consistent Body Shapes
 
-This repository contains all functionality from the paper "Leveraging Anthropometric Measurements to Improve Human Mesh Estimation and Ensure Consistent Body Shapes". The trainings and evaluations mentioned in the paper can be reproduced with this repository. If you are only interested in the A2B models, we provide a second, reduced repository [here](https://github.com/kaulquappe23/a2b).
+This repository contains all functionality from the paper "[Leveraging Anthropometric Measurements to Improve Human Mesh Estimation and Ensure Consistent Body Shapes](https://arxiv.org/abs/2409.17671)". 
 
+The paper is accepted for [CVsports'25](https://vap.aau.dk/cvsports/) at [CVPR 2025](https://cvpr.thecvf.com/Conferences/2025). 
+
+The trainings and evaluations mentioned in the paper can be reproduced with this repository. If you are only interested in the A2B models, we provide a second, reduced repository [here](https://github.com/kaulquappe23/a2b).
+
+![](/examples/video_aspset.mp4)
 
 ## Installation
 
@@ -293,3 +298,15 @@ python -m uplift_upsample.eval --dataset <aspset/fit3d> --weights <path/to/weigh
 ```
 For fit3D, you need to use `val` as the `test_subset` and `model` as the `model` name. For ASPset, use `test` as the `test_subset` and the `ema_model` as the `model`.
 The savefile can now be used to run IK on. We always use the stride 5 evaluation since it is the best, but you can also try with other strides. 
+
+# Citation
+
+In case this work is useful for your research, please consider citing:
+```bibtex
+@article{ludwig2024leveraging,
+  title={Leveraging Anthropometric Measurements to Improve Human Mesh Estimation and Ensure Consistent Body Shapes},
+  author={Ludwig, Katja and Lorenz, Julian and Kienzle, Daniel and Bui, Tuan and Lienhart, Rainer},
+  journal={arXiv preprint arXiv:2409.17671},
+  year={2024}
+}
+```
