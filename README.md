@@ -6,7 +6,8 @@ The paper is accepted for [CVsports'25](https://vap.aau.dk/cvsports/) at [CVPR 2
 
 The trainings and evaluations mentioned in the paper can be reproduced with this repository. If you are only interested in the A2B models, we provide a second, reduced repository [here](https://github.com/kaulquappe23/a2b).
 
-![](/examples/video_aspset.mp4)
+![Example](/examples/visualization.png)
+More qualitative examples can be found in the folder `examples`.
 
 ## Installation
 
