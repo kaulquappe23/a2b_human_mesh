@@ -83,4 +83,4 @@ if __name__ == '__main__':
 
     save_dir = os.path.join(args.save_path,  f"{args.split}_{args.gender}")
     os.makedirs(save_dir, exist_ok=True)
-    run_on_aspset(args.split, args.data_path, save_dir, args.gender)
+    run_on_aspset(args.split, args.data_path, save_dir, args.gender, args.num_procs)

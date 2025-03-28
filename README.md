@@ -1,5 +1,7 @@
 # Leveraging Anthropometric Measurements to Improve Human Mesh Estimation and Ensure Consistent Body Shapes
 
+This repository contains all functionality from the paper "Leveraging Anthropometric Measurements to Improve Human Mesh Estimation and Ensure Consistent Body Shapes". The trainings and evaluations mentioned in the paper can be reproduced with this repository. If you are only interested in the A2B models, we provide a second, reduced repository [here](https://github.com/kaulquappe23/a2b).
+
 ## Installation
 
 Create a new anaconda environment by running 
@@ -11,6 +13,15 @@ and activate the environment with
 conda activate a2b_hme
 ```
 For evaluation and fit3D, the SMPL-X models are needed. If you just want to test the A2B models, the SMPL-X models are not necessary. If you need them, download the SMPL-X models from the [official SMPL-X repository](https://smpl-x.is.tue.mpg.de) and place them in the folder `smpl-models/smplx`. Alternatively, you can modify the variable `SMPL_MODEL_DIR` in the file `config.py` and set it to the directory where you have stored the model files.
+
+## Reproducing the Results
+
+In order to reproduce the results, you need to follow the steps in the following order:
+1. Generate 2D predictions. We finetuned ViTPose on the ASPset and fit3D datasets. We provide the 2D predictions for ASPset in the directory `dataset/aspset/vitpose` and for fit3D [here](TODO:enormous file size!!). If you want to generate the 2D predictions yourself, you can use the code from the [official ViTPose repository](https://github.com/ViTAE-Transformer/ViTPose). Note that we finetuned ViTPose for our final results.
+2. Estimate 3D poses with Uplift and Upsample. We provide the code for training and evaluation in the subdirectory `uplift_upsample`. The training and evaluation steps are described in Section [Uplift Upsample Evaluation](#uplift-upsample-evaluation). Be careful to choose the settings correctly for the specific dataset since they are a little different as described in that section.
+3. Run IK on the UU results. Warning: This might take a lot of time, especially for fit3D since it is a large dataset. The steps are described in Section [Inverse Kinematics](#inverse-kinematics). The command line parameter `split` should be set to `val` for fit3D and `test` for ASPset. We used a neutral gender in our experiments. Note that you need to add `_stride_5` to the path with the stored UU results. UU evaluates on different strides, we choose the lowest stride 5 since it is the best.
+4. Create A2B body shapes
+5. Evaluate results
 
 ## A2B Models
 
@@ -159,21 +170,17 @@ Like for fit3d, `data_path` can either be the path to the ground truth of ASPset
 Since the axes of the coordinate systems of ASPset and SMPL-X are different, the ASPset joints are rotated before they are used for IK. The rotation is also present in the results. This needs to be taken into account during evaluation or other further usage.
 
 
-## Evaluation and B2A
-
-In this section we describe how we evaluate model results with consistent body shapes and how we create the measurements for our evaluations.
-
-### Measuring SMPL-X models: B2A
+## Measuring SMPL-X models: B2A
 
 In order to measure correctly, the mapping of vertices to bodyparts needs to be known. A file containing the necessary information is provided by the [meshcapade wiki](https://meshcapade.wiki/SMPL#model-tools). Scroll to the headline *Body-part segmentation* and download the file linked to *b) SMPL-X / SUPR part segmentation* as `smplx_vert_segmentation.json`. Put it in the folder `anthro/mesurements` or adjust the variable `VERT_SEGM_PATH` in the file `config.py` to the path where you stored the file.
 
-Measurements are possible with the `smplx_measurer` object in `anthro.measurements.measure`. You need to call the function `smplx_measurer.measure(betas, model)`. The betas are the SMPL-X beta parameters and the model is the SMPL-X model (a created object). The function returns a dictionary with the measurements. The keys are the body parts and the values are the measurements in meters. A list of the measured anthropometric values is given in the supplementary material of the paper.
+Measurements are possible with the `smplx_measurer` object in `anthro.measurements.measure`. You need to call the function `smplx_measurer.measure(betas, model)`. The betas are the SMPL-X beta parameters and the model is the SMPL-X model (a created object with the correct gender). The function returns a dictionary with the measurements. The keys are the body parts and the values are the measurements in meters. A list of the measured anthropometric values is given in Section [A2B Models](#a2b-models).
 
-### Evaluation
+## Evaluation
 
-The evaluation code is provided in the subdirectory `evaluation`. A special format is needed for all evaluations. The results need to be given in a dictionary, the mapping is different for ASPset and fit3d. See the following sections.
+The evaluation code is provided in the subdirectory `evaluation`. A special format is needed for all evaluations. The results need to be given in a dictionary, the mapping is a little different for ASPset and fit3D. See the following sections.
 
-#### ASPset
+### ASPset
 
 ASPset results need to be given in a dictionary with the following structure:
 ```
@@ -269,15 +276,18 @@ python -m uplift_upsample.train --config ./uplift_upsample/experiments/aspset_35
 ```
 
 ### Training on fit3D
-Training on fit3D is executed analogous to ASPset. The csv files for fit3D will be uploaded after acceptance of this paper due to file size restrictions and anonymity requirements. Since we use cross-validation here, you need to specify in the config file, on which configuration you want to train (see above for parameter name). The vitpose files are structured such that the folder name is the subject name of the validation subject.
+Training on fit3D is executed analogous to ASPset. The csv files for fit3D can be downloaded (here)[TODO]. Since we use cross-validation here, you need to specify in the config file, on which validation subject you want to train (adjust the parameter named `PREDICTION_PATH_2D` to the location where the `train.csv`and `val.csv` files are stored). The vitpose files are structured such that the folder name is the subject name of the validation subject.
 
 ### Training on AMASS and Human3.6m
 Follow the instructions of the [original repository](https://github.com/goldbricklemon/uplift-upsample-3dhpe) to setup the dataset(s), download the pre-trained models, and run the code. Since the code is a sub-repository here, the only difference for running is that you need to add the `uplift_upsample` prefix to the train/eval calls, etc. Pretrained weights can be downloaded from the original repository in `.h5` format and reused in this repository.
 
-### Evaluation
+### Uplift Upsample Evaluation
 
-In order to run IK on the results from Uplift and Upsample, you need to generate results files. Run the evaluation with the following command:
+You can either evaluate your own trained model, or use our pretrained weights. We provide the weights for the ASPset and fit3D datasets. For fit3D, we perform a leave-one-out cross-validation. Therefore, pretrained weights are available for each left-out subject. The left-out subject is contained in the filename. The weights can be downloaded [here](https://mediastore.rz.uni-augsburg.de/get/E_hsThx4v0/). Put the weights in the folder `./uplift_upsample/pretrained_weights`.
+
+Run the evaluation with the following command:
 ```bash
-python -m uplift_upsample.eval --dataset <aspset/fit3d> --weights <path/to/weights/file> --config ./uplift_upsample/experiments/<config>.json --savefile <path/wehere/results/are/stored.pkl> --dataset_3d_path <path/to/aspset> --test_subset val --gpu_id 0 --model model
+python -m uplift_upsample.eval --dataset <aspset/fit3d> --weights <path/to/weights/file> --config ./uplift_upsample/experiments/<config>.json --savefile <path/wehere/results/are/stored.pkl> --dataset_3d_path <path/to/aspset> --test_subset <val/test> --gpu_id 0 --model <model/ema_model>
 ```
+For fit3D, you need to use `val` as the `test_subset` and `model` as the `model` name. For ASPset, use `test` as the `test_subset` and the `ema_model` as the `model`.
 The savefile can now be used to run IK on. We always use the stride 5 evaluation since it is the best, but you can also try with other strides. We also provide our results that you can download here: TODO

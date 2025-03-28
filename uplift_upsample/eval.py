@@ -362,6 +362,6 @@ if __name__ == '__main__':
                                dataset2d_path=args.dataset_2d,
                                test_subset=args.test_subset,
                                weights_path=args.weights,
-                               action_wise=args.action_wise,
+                               action_wise=False,
                                model_name=args.model_name,
                                save_results=args.savefile)
