@@ -18,11 +18,11 @@ For evaluation and fit3D, the SMPL-X models are needed. If you just want to test
 ## Reproducing the Results
 
 In order to reproduce the results, you need to follow the steps in the following order:
-1. Generate 2D predictions. We finetuned ViTPose on the ASPset and fit3D datasets. We provide the 2D predictions for ASPset in the directory `dataset/aspset/vitpose` and for fit3D [here](TODO:enormous file size!!). If you want to generate the 2D predictions yourself, you can use the code from the [official ViTPose repository](https://github.com/ViTAE-Transformer/ViTPose). Note that we finetuned ViTPose for our final results.
-2. Estimate 3D poses with Uplift and Upsample. We provide the code for training and evaluation in the subdirectory `uplift_upsample`. The training and evaluation steps are described in Section [Uplift Upsample Evaluation](#uplift-upsample-evaluation). Be careful to choose the settings correctly for the specific dataset since they are a little different as described in that section.
+1. Generate 2D predictions. We finetuned ViTPose on the ASPset and fit3D datasets. We provide the 2D predictions for ASPset in the directory `dataset/aspset/vitpose` and for fit3D, we exemplary provide the validation results for one cross-validation run with s11 as the validation subject [here](https://mediastore.rz.uni-augsburg.de/get/0fVLo70EAJ/). If you want to generate the 2D predictions yourself, you can use the code from the [official ViTPose repository](https://github.com/ViTAE-Transformer/ViTPose). Note that we finetuned ViTPose for our final results.
+2. Estimate 3D poses with Uplift and Upsample. We provide the code for training and evaluation in the subdirectory `uplift_upsample`. The training and evaluation steps are described in Section [Uplift Upsample Evaluation](#uplift-upsample-evaluation). Be careful to choose the settings correctly for the specific dataset since they are a little different for both datasets, which is described in detail in the mentioned section. 
 3. Run IK on the UU results. Warning: This might take a lot of time, especially for fit3D since it is a large dataset. The steps are described in Section [Inverse Kinematics](#inverse-kinematics). The command line parameter `split` should be set to `val` for fit3D and `test` for ASPset. We used a neutral gender in our experiments. Note that you need to add `_stride_5` to the path with the stored UU results. UU evaluates on different strides, we choose the lowest stride 5 since it is the best.
-4. Create A2B body shapes
-5. Evaluate results
+4. Create A2B body shapes. At first, you need to re-organize the IK results, which is explained in Section [Evaluation](#evaluation): you need to run a `<dataset>_prepare_ik` script which will generate two files containing all SMPL-X parameters and a file with the beta parameters only. This file can now be used to create anthropometric measurements (see Section [Evaluation with fixed beta parameters](#evaluation-with-fixed-beta-parameters). The measurements can then be used as an input to the A2B models. For ASPset, we provide the anthropometric measurements that we derived from IK executed on the ground truth poses in the folder `dataset/aspset/measurements`. For fit3D, you can download the ground truth measurements [here](https://mediastore.rz.uni-augsburg.de/get/dIYApu4Mey/). You can directly pass this file to the A2B models as described in Section [A2B Models](#a2b-models). 
+5. Evaluate the results. The evaluation procedure is described in Section [Evaluation](#evaluation), for evaluation with consistent body shapes, see Section [Evaluation with fixed beta parameters](#evaluation-with-fixed-beta-parameters). Pass the results of the A2B models as the `betas` parameter to use them during evaluation.
 
 
 ## A2B Models
@@ -278,18 +278,18 @@ python -m uplift_upsample.train --config ./uplift_upsample/experiments/aspset_35
 ```
 
 ### Training on fit3D
-Training on fit3D is executed analogous to ASPset. The csv files for fit3D can be downloaded (here)[TODO]. Since we use cross-validation here, you need to specify in the config file, on which validation subject you want to train (adjust the parameter named `PREDICTION_PATH_2D` to the location where the `train.csv`and `val.csv` files are stored). The vitpose files are structured such that the folder name is the subject name of the validation subject.
+Training on fit3D is executed analogous to ASPset. The csv files for one exemplary cross-validation run (s11 as the validation subject) for fit3D can be downloaded (here)[https://mediastore.rz.uni-augsburg.de/get/0fVLo70EAJ/]. Since we use cross-validation here, you need to specify in the config file, on which validation subject you want to train (adjust the parameter named `PREDICTION_PATH_2D` to the location where the `train.csv`and `val.csv` files are stored). The vitpose files should structured such that the folder name is the subject name of the validation subject.
 
 ### Training on AMASS and Human3.6m
 Follow the instructions of the [original repository](https://github.com/goldbricklemon/uplift-upsample-3dhpe) to setup the dataset(s), download the pre-trained models, and run the code. Since the code is a sub-repository here, the only difference for running is that you need to add the `uplift_upsample` prefix to the train/eval calls, etc. Pretrained weights can be downloaded from the original repository in `.h5` format and reused in this repository.
 
 ### Uplift Upsample Evaluation
 
-You can either evaluate your own trained model, or use our pretrained weights. We provide the weights for the ASPset and fit3D datasets. For fit3D, we perform a leave-one-out cross-validation. Therefore, pretrained weights are available for each left-out subject. The left-out subject is contained in the filename. The weights can be downloaded [here](https://mediastore.rz.uni-augsburg.de/get/E_hsThx4v0/). Put the weights in the folder `./uplift_upsample/pretrained_weights`.
+You can either evaluate your own trained model, or use our pretrained weights. We provide the weights for the ASPset and fit3D datasets. For fit3D, we perform a leave-one-out cross-validation. Therefore, pretrained weights are available for each left-out subject. The left-out subject is contained in the filename. The weights can be downloaded [here](https://mediastore.rz.uni-augsburg.de/get/E_hsThx4v0/). Put the weights in the folder `./uplift_upsample/pretrained_weights`. For fit3d, the model name contains the left-out subject. 
 
 Run the evaluation with the following command:
 ```bash
 python -m uplift_upsample.eval --dataset <aspset/fit3d> --weights <path/to/weights/file> --config ./uplift_upsample/experiments/<config>.json --savefile <path/wehere/results/are/stored.pkl> --dataset_3d_path <path/to/aspset> --test_subset <val/test> --gpu_id 0 --model <model/ema_model>
 ```
 For fit3D, you need to use `val` as the `test_subset` and `model` as the `model` name. For ASPset, use `test` as the `test_subset` and the `ema_model` as the `model`.
-The savefile can now be used to run IK on. We always use the stride 5 evaluation since it is the best, but you can also try with other strides. We also provide our results that you can download here: TODO
+The savefile can now be used to run IK on. We always use the stride 5 evaluation since it is the best, but you can also try with other strides. 
